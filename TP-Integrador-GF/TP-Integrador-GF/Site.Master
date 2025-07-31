@@ -1,0 +1,213 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="TP_Integrador_GF.SiteMaster" %>
+
+<!DOCTYPE html>
+<html lang="es">
+<head runat="server">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%: Page.Title %> - Mi aplicación ASP.NET</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            form {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                background-color: #333;
+                padding: 10px 15px;
+                color: white;
+            }
+
+            .navbar-brand {
+                color: white;
+                font-size: 24px;
+                text-decoration: none;
+            }
+
+            .sidebar {
+                margin-top: 60px;
+                position: fixed;
+                left: -250px;
+                top: 0;
+                width: 250px;
+                height: 100%;
+                background-color: #333;
+                color: white;
+                padding: 15px;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .sidebar .nav-link {
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                display: block;
+                text-decoration: none;
+                margin-bottom: 5px;
+            }
+
+            .sidebar .nav-link:hover {
+                background-color: #555;
+            }
+
+            .dropdown-menu {
+                background-color: #444;
+                border: none;
+            }
+
+            .dropdown-item {
+                color: white;
+            }
+
+            .dropdown-item:hover {
+                background-color: #555;
+            }
+
+            #MainContent {
+                flex: 1;
+                margin-top: 60px;
+                transition: margin-left 0.3s ease;
+                padding: 20px;
+            }
+
+            #MainContent.active {
+                margin-left: 250px;
+            }
+
+            footer {
+                background-color: #f8f9fa;
+                color: #333;
+                text-align: center;
+                padding: 10px 0;
+                border-top: 1px solid #ddd;
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+            }
+
+            a {
+                color: #3498db;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+
+    </style>
+</head>
+<body>
+    <form runat="server">
+
+        <asp:ScriptManager runat="server">
+            <Scripts>
+                <asp:ScriptReference Name="jquery" />
+                <asp:ScriptReference Name="bootstrap" />
+            </Scripts>
+        </asp:ScriptManager>
+
+   
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <button class="btn btn-dark" type="button" onclick="toggleSidebar()">&#9776;</button>
+                <a class="navbar-brand ms-3" href="/">InciDesk</a>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ⚙️
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="PerfilUsuario.aspx">Perfil</a></li>
+                            <li><a class="dropdown-item" href="CambiarContraseña.aspx">Cambiar contraseña</a></li>
+                            <li>
+                                <asp:LinkButton 
+                                    ID="BtnSalir" 
+                                    runat="server" 
+                                    CssClass="dropdown-item" 
+                                    OnClick="BtnSalir_onclick">Salir
+                                </asp:LinkButton>
+                            </li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+
+        <div id="sidebar" runat="server" class="sidebar">
+            <ul class="nav flex-column">
+
+                <li><a href="Default.aspx" class="nav-link">Inicio</a></li>
+
+                <li>
+                    <a href="#submenu1" data-bs-toggle="collapse" class="nav-link">Altas</a>
+                    <ul id="submenu1" class="collapse">
+                        <li><a href="AltaIncidencias.aspx" class="nav-link">Alta Incidencias</a></li>
+                        <li><a href="AltaClientes.aspx" class="nav-link">Alta Clientes</a></li>
+                        <%if (Session["IDPerfil"]?.ToString() == "2" || Session["IDPerfil"]?.ToString() == "3")
+                          { %>
+                            <li><a href="AltaUsuarios.aspx" class="nav-link">Alta Usuarios</a></li>
+                        <%} %>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="#submenu2" data-bs-toggle="collapse" class="nav-link">Historiales</a>
+                    <ul id="submenu2" class="collapse">
+                        <li><a href="Historial_Incidencias.aspx" class="nav-link">Historial Incidencias</a></li>
+                        <li><a href="Historial_Clientes.aspx" class="nav-link">Historial Clientes</a></li>
+                        <% if (Session["IDPerfil"]?.ToString() == "2" || Session["IDPerfil"]?.ToString() == "3")
+                           { %>
+                                <li><a href="Historial_Usuarios.aspx" class="nav-link">Historial Usuarios</a></li>
+                        <% } %>
+                    </ul>
+                </li>
+
+                <li><a href="Contact.aspx" class="nav-link">Nosotros</a></li>
+                
+            </ul>
+        </div>
+
+
+        <div id="MainContent" class="content">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+        </div>
+            <footer>&copy; <%: DateTime.Now.Year %> - CallCenter ASP.NET</footer>
+    </form>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById('<%= sidebar.ClientID %>');
+            var mainContent = document.getElementById('<%= MainContent.ClientID %>');
+
+            sidebar.classList.toggle('active');
+            MainContent.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
